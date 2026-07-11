@@ -45,6 +45,7 @@ export default function QuotationInvoiceWorkflow({
   const [formType, setFormType] = useState<'quotation' | 'sales_order' | 'invoice'>('quotation');
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [formItems, setFormItems] = useState<DocumentItem[]>([]);
+  const [productSearch, setProductSearch] = useState('');
   const [taxRate, setTaxRate] = useState(8); // 8% default
   const [discountAmount, setDiscountAmount] = useState(0);
   const [dueDate, setDueDate] = useState('');
@@ -77,10 +78,21 @@ export default function QuotationInvoiceWorkflow({
     return { subtotal, tax, total };
   }, [formItems, taxRate, discountAmount]);
 
+  const filteredProducts = useMemo(() => {
+    const query = productSearch.trim().toLowerCase();
+    if (!query) return products;
+    return products.filter((product) =>
+      product.name.toLowerCase().includes(query) ||
+      product.sku.toLowerCase().includes(query) ||
+      product.category.toLowerCase().includes(query)
+    );
+  }, [products, productSearch]);
+
   const handleOpenCreateForm = (type: 'quotation' | 'sales_order' | 'invoice') => {
     setFormType(type);
     setSelectedCustomerId(customers[0]?.id || '');
     setFormItems([]);
+    setProductSearch('');
     setDiscountAmount(0);
     setTaxRate(8);
     setDueDate(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]); // 14 days out
@@ -515,8 +527,17 @@ export default function QuotationInvoiceWorkflow({
               </div>
               
               {/* Product quick adder list */}
-              <div className="p-3 bg-white border-b border-gray-100 flex flex-wrap gap-2">
-                {products.map(p => (
+              <div className="p-3 bg-white border-b border-gray-100 space-y-3">
+                <input
+                  id="form-product-search"
+                  type="text"
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Search product by name, SKU, or category..."
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs"
+                />
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
+                {filteredProducts.map(p => (
                   <button
                     key={p.id}
                     id={`btn-quick-add-${p.id}`}
@@ -527,6 +548,10 @@ export default function QuotationInvoiceWorkflow({
                     + {p.name} (${p.price})
                   </button>
                 ))}
+                </div>
+                {filteredProducts.length === 0 && (
+                  <p className="text-[11px] text-gray-400 font-semibold">No products match your search.</p>
+                )}
               </div>
 
               {/* Items List */}
