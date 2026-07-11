@@ -26,6 +26,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { UserProfile, Customer, Product, Category, Supplier, ERPDocument, ActivityLog, BackupLog, UserRole } from './types';
+import { SEED_CATEGORIES, SEED_SUPPLIERS, SEED_PRODUCTS } from './seedData';
 
 // Web App Firebase Configuration from firebase-applet-config.json
 const firebaseConfig = {
@@ -190,37 +191,22 @@ export async function seedDatabase(currentUser: { uid: string; name: string; ema
     // 1. Categories
     const localCats = localStorage.getItem('inovexa_local_categories');
     if (!localCats || JSON.parse(localCats).length === 0) {
-      const categories: Category[] = [
-        { id: 'cat-1', name: 'Cloud Computing', description: 'Enterprise cloud hosting, compute, and server solutions.' },
-        { id: 'cat-2', name: 'Cybersecurity', description: 'Advanced firewall, endpoint protection, and penetration testing.' },
-        { id: 'cat-3', name: 'AI & Data Analytics', description: 'Machine learning modules, pipeline integration, and smart insights.' },
-        { id: 'cat-4', name: 'Hardware & Devices', description: 'Premium workstations, enterprise servers, and networking hubs.' }
-      ];
-      localStorage.setItem('inovexa_local_categories', JSON.stringify(categories));
+      localStorage.setItem('inovexa_local_categories', JSON.stringify(SEED_CATEGORIES));
     }
 
     // 2. Suppliers
     const localSups = localStorage.getItem('inovexa_local_suppliers');
     if (!localSups || JSON.parse(localSups).length === 0) {
-      const suppliers: Supplier[] = [
-        { id: 'sup-1', name: 'Apex Semiconductors', contactName: 'Helen Carter', email: 'helen@apex-semi.com', phone: '+1 (555) 234-5678', address: '101 Silicon Way, San Jose, CA' },
-        { id: 'sup-2', name: 'Vertex Systems Group', contactName: 'Marcus Aurel', email: 'procurement@vertex-sys.com', phone: '+1 (555) 876-5432', address: '404 Network Ave, Austin, TX' },
-        { id: 'sup-3', name: 'Aether Cloud Distributors', contactName: 'Sarah Jenkins', email: 'accounts@aether-dist.com', phone: '+44 20 7946 0192', address: '88 London Bridge Rd, London, UK' }
-      ];
-      localStorage.setItem('inovexa_local_suppliers', JSON.stringify(suppliers));
+      localStorage.setItem('inovexa_local_suppliers', JSON.stringify(SEED_SUPPLIERS));
     }
 
     // 3. Products
     const localProds = localStorage.getItem('inovexa_local_products');
     if (!localProds || JSON.parse(localProds).length === 0) {
-      const products = [
-        { id: 'prod-1', sku: 'INV-CLD-ENT', name: 'Enterprise Cloud Suite Pro', category: 'Cloud Computing', supplierId: 'sup-3', supplierName: 'Aether Cloud Distributors', description: 'Hybrid cloud framework with integrated backup, 99.99% uptime SLA.', price: 1200, cost: 450, stock: 45, minStock: 10, unit: 'license/mo', createdAt: new Date().toISOString() },
-        { id: 'prod-2', sku: 'INV-CYB-FW', name: 'Sentinel Firewall Gateway X1', category: 'Cybersecurity', supplierId: 'sup-2', supplierName: 'Vertex Systems Group', description: 'Enterprise stateful firewall with real-time threat intelligence and SSL decrypt.', price: 2450, cost: 1100, stock: 8, minStock: 5, unit: 'unit', createdAt: new Date().toISOString() },
-        { id: 'prod-3', sku: 'INV-AI-ANL', name: 'Predictive Insights Engine', category: 'AI & Data Analytics', supplierId: 'sup-1', supplierName: 'Apex Semiconductors', description: 'AI module that integrates with local databases to compile predictive sales dashboards.', price: 3200, cost: 1500, stock: 3, minStock: 5, unit: 'license', createdAt: new Date().toISOString() },
-        { id: 'prod-4', sku: 'INV-HW-NODE', name: 'Inovexa Compute Node C4', category: 'Hardware & Devices', supplierId: 'sup-1', supplierName: 'Apex Semiconductors', description: '2U Rackmount Server, Dual Intel Xeon, 128GB RAM, 2TB SSD.', price: 4100, cost: 2300, stock: 12, minStock: 4, unit: 'unit', createdAt: new Date().toISOString() },
-        { id: 'prod-5', sku: 'INV-CYB-EP', name: 'Endpoint Protection Agent', category: 'Cybersecurity', supplierId: 'sup-2', supplierName: 'Vertex Systems Group', description: 'Device-level antivirus with automated patch remediation and zero-day defense.', price: 45, cost: 15, stock: 120, minStock: 20, unit: 'user/yr', createdAt: new Date().toISOString() },
-        { id: 'prod-6', sku: 'INV-CLD-DB', name: 'Managed Database Cluster', category: 'Cloud Computing', supplierId: 'sup-3', supplierName: 'Aether Cloud Distributors', description: 'Highly scalable database cluster with automated replication and daily backups.', price: 650, cost: 220, stock: 2, minStock: 5, unit: 'instance/mo', createdAt: new Date().toISOString() }
-      ];
+      const products = SEED_PRODUCTS.map((product) => ({
+        ...product,
+        createdAt: new Date().toISOString()
+      }));
       localStorage.setItem('inovexa_local_products', JSON.stringify(products));
     }
 
@@ -337,13 +323,7 @@ export async function seedDatabase(currentUser: { uid: string; name: string; ema
     // 1. Categories
     const categoriesSnapshot = await getDocs(collection(db, 'categories'));
     if (categoriesSnapshot.empty) {
-      const categories: Category[] = [
-        { id: 'cat-1', name: 'Cloud Computing', description: 'Enterprise cloud hosting, compute, and server solutions.' },
-        { id: 'cat-2', name: 'Cybersecurity', description: 'Advanced firewall, endpoint protection, and penetration testing.' },
-        { id: 'cat-3', name: 'AI & Data Analytics', description: 'Machine learning modules, pipeline integration, and smart insights.' },
-        { id: 'cat-4', name: 'Hardware & Devices', description: 'Premium workstations, enterprise servers, and networking hubs.' }
-      ];
-      for (const cat of categories) {
+      for (const cat of SEED_CATEGORIES) {
         await setDoc(doc(db, 'categories', cat.id), cat);
       }
     }
@@ -351,12 +331,7 @@ export async function seedDatabase(currentUser: { uid: string; name: string; ema
     // 2. Suppliers
     const suppliersSnapshot = await getDocs(collection(db, 'suppliers'));
     if (suppliersSnapshot.empty) {
-      const suppliers: Supplier[] = [
-        { id: 'sup-1', name: 'Apex Semiconductors', contactName: 'Helen Carter', email: 'helen@apex-semi.com', phone: '+1 (555) 234-5678', address: '101 Silicon Way, San Jose, CA' },
-        { id: 'sup-2', name: 'Vertex Systems Group', contactName: 'Marcus Aurel', email: 'procurement@vertex-sys.com', phone: '+1 (555) 876-5432', address: '404 Network Ave, Austin, TX' },
-        { id: 'sup-3', name: 'Aether Cloud Distributors', contactName: 'Sarah Jenkins', email: 'accounts@aether-dist.com', phone: '+44 20 7946 0192', address: '88 London Bridge Rd, London, UK' }
-      ];
-      for (const sup of suppliers) {
+      for (const sup of SEED_SUPPLIERS) {
         await setDoc(doc(db, 'suppliers', sup.id), sup);
       }
     }
@@ -364,15 +339,7 @@ export async function seedDatabase(currentUser: { uid: string; name: string; ema
     // 3. Products
     const productsSnapshot = await getDocs(collection(db, 'products'));
     if (productsSnapshot.empty) {
-      const products: Omit<Product, 'createdAt'>[] = [
-        { id: 'prod-1', sku: 'INV-CLD-ENT', name: 'Enterprise Cloud Suite Pro', category: 'Cloud Computing', supplierId: 'sup-3', supplierName: 'Aether Cloud Distributors', description: 'Hybrid cloud framework with integrated backup, 99.99% uptime SLA.', price: 1200, cost: 450, stock: 45, minStock: 10, unit: 'license/mo' },
-        { id: 'prod-2', sku: 'INV-CYB-FW', name: 'Sentinel Firewall Gateway X1', category: 'Cybersecurity', supplierId: 'sup-2', supplierName: 'Vertex Systems Group', description: 'Enterprise stateful firewall with real-time threat intelligence and SSL decrypt.', price: 2450, cost: 1100, stock: 8, minStock: 5, unit: 'unit' },
-        { id: 'prod-3', sku: 'INV-AI-ANL', name: 'Predictive Insights Engine', category: 'AI & Data Analytics', supplierId: 'sup-1', supplierName: 'Apex Semiconductors', description: 'AI module that integrates with local databases to compile predictive sales dashboards.', price: 3200, cost: 1500, stock: 3, minStock: 5, unit: 'license' },
-        { id: 'prod-4', sku: 'INV-HW-NODE', name: 'Inovexa Compute Node C4', category: 'Hardware & Devices', supplierId: 'sup-1', supplierName: 'Apex Semiconductors', description: '2U Rackmount Server, Dual Intel Xeon, 128GB RAM, 2TB SSD.', price: 4100, cost: 2300, stock: 12, minStock: 4, unit: 'unit' },
-        { id: 'prod-5', sku: 'INV-CYB-EP', name: 'Endpoint Protection Agent', category: 'Cybersecurity', supplierId: 'sup-2', supplierName: 'Vertex Systems Group', description: 'Device-level antivirus with automated patch remediation and zero-day defense.', price: 45, cost: 15, stock: 120, minStock: 20, unit: 'user/yr' },
-        { id: 'prod-6', sku: 'INV-CLD-DB', name: 'Managed Database Cluster', category: 'Cloud Computing', supplierId: 'sup-3', supplierName: 'Aether Cloud Distributors', description: 'Highly scalable database cluster with automated replication and daily backups.', price: 650, cost: 220, stock: 2, minStock: 5, unit: 'instance/mo' }
-      ];
-      for (const prod of products) {
+      for (const prod of SEED_PRODUCTS) {
         await setDoc(doc(db, 'products', prod.id), {
           ...prod,
           createdAt: Timestamp.now()
@@ -549,4 +516,3 @@ export async function seedDatabase(currentUser: { uid: string; name: string; ema
     return false;
   }
 }
-
