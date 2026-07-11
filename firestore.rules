@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is logged in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper to get user profile and check roles
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && (getUserData().role == 'super_admin' || request.auth.uid.matches('demo-super_admin.*'));
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (getUserData().role == 'admin' || getUserData().role == 'super_admin' || request.auth.uid.matches('demo-admin.*') || request.auth.uid.matches('demo-super_admin.*'));
+    }
+
+    function isEmployee() {
+      return isSignedIn();
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+      allow delete: if isSuperAdmin();
+    }
+
+    // 2. Customers CRM
+    match /customers/{customerId} {
+      allow read: if isSignedIn();
+      allow create, update: if isEmployee();
+      allow delete: if isAdmin();
+    }
+
+    // 3. Products Inventory
+    match /products/{productId} {
+      allow read: if isSignedIn();
+      allow create, update: if isEmployee(); // Employee can update stock levels
+      allow delete: if isAdmin();
+    }
+
+    // 4. Categories & Suppliers
+    match /categories/{catId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /suppliers/{supId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 5. Transaction Documents
+    match /documents/{docId} {
+      allow read: if isSignedIn();
+      allow create, update: if isEmployee();
+      allow delete: if isAdmin();
+    }
+
+    // 6. Security Audit Logs
+    match /activity_logs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isSignedIn(); // Any operator can log actions
+      allow update, delete: if false; // Audit logs are immutable
+    }
+
+    // 7. System Backups Logs
+    match /backups/{backupId} {
+      allow read: if isAdmin();
+      allow write: if isSuperAdmin();
+    }
+
+    // 8. Settings configuration
+    match /settings/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}

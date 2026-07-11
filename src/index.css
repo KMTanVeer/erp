@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* Compact Mode Global Overrides */
+.compact-layout .p-6, 
+.compact-layout .p-5, 
+.compact-layout .p-8 {
+  padding: 0.75rem !important;
+}
+.compact-layout .space-y-6 > * + * {
+  margin-top: 0.75rem !important;
+}
+.compact-layout .py-3.5 {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+.compact-layout .py-3 {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+}
+.compact-layout h2 {
+  font-size: 1.1rem !important;
+}
+
+/* Premium Enterprise Dark Mode Overrides */
+.dark-mode {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+.dark-mode #app-root-layout {
+  background-color: #0f172a !important;
+}
+.dark-mode main {
+  background-color: #0f172a !important;
+}
+.dark-mode header, 
+.dark-mode .bg-white, 
+.dark-mode .bg-white\/50, 
+.dark-mode .bg-white\/60,
+.dark-mode table, 
+.dark-mode tbody {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+.dark-mode input, 
+.dark-mode select, 
+.dark-mode textarea {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+.dark-mode input:focus, 
+.dark-mode select:focus, 
+.dark-mode textarea:focus {
+  background-color: #334155 !important;
+  border-color: #6366f1 !important;
+}
+.dark-mode .text-gray-800, 
+.dark-mode .text-gray-700, 
+.dark-mode .text-gray-900 {
+  color: #f1f5f9 !important;
+}
+.dark-mode .text-gray-400, 
+.dark-mode .text-gray-500,
+.dark-mode .text-gray-600 {
+  color: #94a3b8 !important;
+}
+.dark-mode .border-gray-50, 
+.dark-mode .border-gray-100, 
+.dark-mode .border-gray-200,
+.dark-mode .divide-gray-50 > * {
+  border-color: #334155 !important;
+}
+.dark-mode .bg-gray-50,
+.dark-mode .bg-gray-50\/50,
+.dark-mode .bg-gray-50\/30,
+.dark-mode .bg-\[\#f3f4f6\] {
+  background-color: #0f172a !important;
+}
+.dark-mode .shadow-sm, 
+.dark-mode .shadow-md, 
+.dark-mode .shadow-lg,
+.dark-mode .shadow-\[5px_5px_15px_rgba\(163\,177\,198\,0\.2\)\] {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.5) !important;
+}
+.dark-mode #sidebar-navigation {
+  background-color: #1e293b !important;
+  border-right-color: #334155 !important;
+}
+.dark-mode #sidebar-navigation a {
+  color: #94a3b8 !important;
+}
+.dark-mode #sidebar-navigation a:hover, 
+.dark-mode #sidebar-navigation a.active {
+  color: #ffffff !important;
+  background-color: #334155 !important;
+}
+

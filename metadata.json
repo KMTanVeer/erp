@@ -1,0 +1,8 @@
+{
+  "name": "Inovexa ERP CRM",
+  "description": "Enterprise-grade ERP and CRM solution for Inovexa Technologies featuring real-time synchronization, roles, inventories, sales/quotation pipelines, and PDF exports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
